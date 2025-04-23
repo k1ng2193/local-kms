@@ -1,0 +1,27 @@
+Keys:
+  Symmetric:
+    Aes:
+      - Metadata:
+          KeyId: bc436485-5092-42b8-92a3-0aa8b93536dc
+        BackingKeys:
+          - a4e5c333219e1da50dbcd460008fb85c48b55ced1cdbb353b0dfd9ff2afb67ba
+          - 86a552907d69433db8aefea02c72bfe7f6e9207e382b00130130788cf39af817
+  Asymmetric:
+    Ecc:
+      - Metadata:
+          KeyId: 800d5768-3fd7-4edd-a4b8-4c81c3e4c147
+          KeyUsage: SIGN_VERIFY
+        PrivateKeyPem: |
+          -----BEGIN EC PRIVATE KEY-----
+          MHQCAQEEIKqBaE374m/fVvvU/a6wghsEC5J85GSQVKqsCnihHuOnoAcGBSuBBAAK
+          oUQDQgAENBuj2GQ2inJRRTnWcu+GzxLFWq2tTVfTLxTuv59dUDFt+SHtw81sfVKC
+          sdoA7e5mSrqB3DkpHedC0YYV4MXkwg==
+          -----END EC PRIVATE KEY-----
+
+
+Aliases:
+  - AliasName: alias/local-did-master
+    TargetKeyId: bc436485-5092-42b8-92a3-0aa8b93536dc
+
+  - AliasName: alias/local-plc
+    TargetKeyId: 800d5768-3fd7-4edd-a4b8-4c81c3e4c147

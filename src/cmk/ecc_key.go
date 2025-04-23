@@ -10,8 +10,9 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/btcsuite/btcd/btcec/v2"
 	"math/big"
+
+	"github.com/btcsuite/btcd/btcec/v2"
 )
 
 // We create our own type to manage JSON Marshaling
@@ -268,6 +269,14 @@ func (k *EcdsaPrivateKey) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+var secp256k1OID = asn1.ObjectIdentifier{1, 3, 132, 0, 10}
+
+var privateKeyInfo struct {
+	Version       int
+	PrivateKey    []byte
+	NamedCurveOID asn1.ObjectIdentifier `asn1:"optional,explicit,tag:0"`
+}
+
 // ----------------------------------------------------
 // Construct key from YAML (seeding)
 // ---
@@ -293,29 +302,54 @@ func (k *EccKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return &UnmarshalYAMLError{fmt.Sprintf("Unable to decode pem of key %s check the YAML.\n", k.Metadata.KeyId)}
 	}
 
-	parseResult, pkcsParseError := x509.ParseECPrivateKey(pemDecoded.Bytes)
-	if pkcsParseError != nil {
-		return &UnmarshalYAMLError{fmt.Sprintf("Unable to decode pem of key %s, Ensure it is in PKCS8 format with no password: %s.\n", k.Metadata.KeyId, pkcsParseError)}
+	
+	if _, err := asn1.Unmarshal(pemDecoded.Bytes, &privateKeyInfo); err != nil {
+		return &UnmarshalYAMLError{fmt.Sprintf("Failed to parse ASN.1 structure: %s", err)}
 	}
 
+  var parseResult *ecdsa.PrivateKey
+  var pkcsParseError error
+  if privateKeyInfo.NamedCurveOID.Equal(secp256k1OID) {
+      // Use btcec for SECP256K1
+      privKey, _ := btcec.PrivKeyFromBytes(privateKeyInfo.PrivateKey)
+      parseResult = privKey.ToECDSA()
+      k.Metadata.KeySpec = SpecEccSecp256k1
+      k.Metadata.SigningAlgorithms = []SigningAlgorithm{SigningAlgorithmEcdsaSha256}
+  } else {
+    parseResult, pkcsParseError = x509.ParseECPrivateKey(pemDecoded.Bytes)
+    if pkcsParseError != nil {
+      return &UnmarshalYAMLError{
+        fmt.Sprintf(
+          "Unable to decode pem of key %s, Ensure it is in PKCS8 format with no password: %s.\n",
+          k.Metadata.KeyId,
+          pkcsParseError,
+          ),
+      }
+    }
+  }
 	k.PrivateKey = EcdsaPrivateKey(*parseResult)
-	var bitLen = parseResult.Curve.Params().BitSize
+	curveName := parseResult.Curve.Params().Name
 
-	switch bitLen {
-	case 256:
+	switch curveName {
+	case "P-256":
 		k.Metadata.KeySpec = SpecEccNistP256
 		k.Metadata.SigningAlgorithms = []SigningAlgorithm{SigningAlgorithmEcdsaSha256}
-	case 384:
+	case "P-384":
 		k.Metadata.KeySpec = SpecEccNistP384
 		k.Metadata.SigningAlgorithms = []SigningAlgorithm{SigningAlgorithmEcdsaSha384}
-	case 521:
+	case "P-521":
 		k.Metadata.KeySpec = SpecEccNistP521
 		k.Metadata.SigningAlgorithms = []SigningAlgorithm{SigningAlgorithmEcdsaSha512}
+	case "secp256k1":
+		k.Metadata.KeySpec = SpecEccSecp256k1
+		k.Metadata.SigningAlgorithms = []SigningAlgorithm{SigningAlgorithmEcdsaSha256}
 	default:
 		return &UnmarshalYAMLError{
 			fmt.Sprintf(
-				"EC Keysize must be one of (256,384,521) bits. %d bits found for key %s.\n",
-				bitLen, k.Metadata.KeyId),
+				"EC curve type must be one of (P-256,P-384,P-521,secp256k1). The %s curve type found for key %s is unsupported.\n",
+				curveName,
+				k.Metadata.KeyId,
+			),
 		}
 	}
 
