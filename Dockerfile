@@ -15,6 +15,7 @@ FROM alpine
 
 COPY --from=build /go/bin/local-kms /usr/local/bin/local-kms
 
+RUN apk add --no-cache curl
 RUN mkdir /init
 RUN mkdir /data
 
