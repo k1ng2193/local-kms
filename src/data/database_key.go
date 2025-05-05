@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nsmithuk/local-kms/src/cmk"
+	"github.com/k1ng2193/local-kms/src/cmk"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )

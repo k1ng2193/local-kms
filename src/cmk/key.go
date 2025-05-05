@@ -3,7 +3,7 @@ package cmk
 import (
 	"crypto/rsa"
 	"fmt"
-	"github.com/nsmithuk/local-kms/src/config"
+	"github.com/k1ng2193/local-kms/src/config"
 	"time"
 )
 

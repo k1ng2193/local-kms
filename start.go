@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/nsmithuk/local-kms/src"
-	"github.com/nsmithuk/local-kms/src/config"
+	"github.com/k1ng2193/local-kms/src"
+	"github.com/k1ng2193/local-kms/src/config"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"

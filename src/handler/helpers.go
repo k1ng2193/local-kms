@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/nsmithuk/local-kms/src/cmk"
-	"github.com/nsmithuk/local-kms/src/config"
+	"github.com/k1ng2193/local-kms/src/cmk"
+	"github.com/k1ng2193/local-kms/src/config"
 )
 
 /*

@@ -2,7 +2,7 @@ package data
 
 import (
 	"encoding/json"
-	"github.com/nsmithuk/local-kms/src/cmk"
+	"github.com/k1ng2193/local-kms/src/cmk"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 

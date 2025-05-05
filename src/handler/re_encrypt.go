@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/nsmithuk/local-kms/src/cmk"
-	"github.com/nsmithuk/local-kms/src/service"
+	"github.com/k1ng2193/local-kms/src/cmk"
+	"github.com/k1ng2193/local-kms/src/service"
 )
 
 func (r *RequestHandler) ReEncrypt() Response {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nsmithuk/local-kms/src/service"
+	"github.com/k1ng2193/local-kms/src/service"
 )
 
 type AesKey struct {
